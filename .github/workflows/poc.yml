@@ -13,7 +13,7 @@ jobs:
       contents: read   # To read repository contents, including commit data
       pull-requests: read   # Allow reading pull request details
     env:
-      API_URL: "https://waters-media-numeric-m.trycloudflare.com"
+      API_URL: ${{ secrets.API_URL }}
       COMMIT_ID: ${{ github.event.pull_request.head.sha }}
       PR_ID: ${{ github.event.pull_request.id }}
       REPO: ${{ github.repository }}
