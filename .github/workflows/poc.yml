@@ -18,7 +18,7 @@ jobs:
       PR_ID: ${{ github.event.pull_request.id }}
       REPO: ${{ github.repository }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
-      API_AUTH_TOKEN: ${{ secrets.SECRET_TOKEN }}
+      API_AUTH_TOKEN: ${{ secrets.HYPERCUBE_APIKEY }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
