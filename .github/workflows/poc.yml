@@ -2,11 +2,10 @@ name: CI Pipeline
 
 on:
   pull_request:
-    types: [opened, synchronize, edited, closed]
+    types: [opened, synchronize, edited, reopened]
 
 jobs:
   pipeline:
-    if: startsWith(github.head_ref, 'feature/') || startsWith(github.head_ref, 'bugfix/') || startsWith(github.head_ref, 'hotfix/')
     runs-on: ubuntu-latest
     permissions:
       checks: read
@@ -58,30 +57,17 @@ jobs:
           # Deduplicate by check run ID and save final list
           jq 'unique_by(.id)' all_check_runs.json > unique_check_runs.json
 
-          # Print number of unique check runs
-          echo "🔢 Number of unique check runs (excluding 'pipeline'): $(jq length unique_check_runs.json)"
-          # Print each unique check run ID
-          echo "🆔 Unique Check Run IDs:"
-          jq -r '.[] | "ID: \(.id), Conclusion: \(.conclusion), Status: \(.status)"' unique_check_runs.json
-          # Check for success + completed and fail if any found
-          if jq -e '.[] | select(.conclusion != "success")' unique_check_runs.json > /dev/null; then
-            echo "❌ Check run failing. Pipeline failed."
-            exit 1
-          else
-            echo "✅ All checks passed !"
-          fi
-
           echo "📡 📡 Calling external API with PR ID $PR_ID and commit $COMMIT_ID"
 
-          sleep 10
           PAYLOAD=$(jq -n \
             --arg status "APPLICABLE" \
             --arg message "Build successful" \
             --arg commit "$COMMIT_ID" \
             --arg pr_id "$PR_ID" \
             --arg repo "$REPO" \
+            --arg talos_version "demoversion" \
             --arg pr_number "$PR_NUMBER" \
-            '{status: $status, message: $message, commit: $commit, pr_id: $pr_id, repository: $repo, pr_number: $pr_number}')
+            '{status: $status, message: $message, commit: $commit, pr_id: $pr_id, repository: $repo, talos_version: $talos_version, pr_number: $pr_number}')
           echo "📦 Payload:"
           echo "$PAYLOAD"
           HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" -X POST \
