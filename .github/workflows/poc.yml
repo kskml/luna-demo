@@ -24,11 +24,11 @@ jobs:
     steps:
       - name: Build
         run: |
-          sleep 15
+          sleep 5
           echo "✅ Build passed"
       - name: Test
         run: |
-          sleep 15
+          sleep 5
           echo "✅ All tests passed"
       - name: Release
         run: |
